@@ -318,21 +318,187 @@ if menu == "🔒 Solo Personal Autorizado":
 
     if password == st.secrets["ADMIN_PASSWORD"]:
 
-        st.success("✅ Acceso autorizado")
+            st.success("✅ Acceso autorizado")
 
-        conn = conectar_db()
+    conn = conectar_db()
 
-        df = pd.read_sql_query(
-            "SELECT * FROM retos",
-            conn
+    df = pd.read_sql_query(
+        "SELECT * FROM retos",
+        conn
+    )
+
+    st.subheader("📋 Registros almacenados")
+
+    st.dataframe(df)
+
+    accion = st.radio(
+        "Seleccione una acción",
+        [
+            "✏️ Editar reto",
+            "🗑️ Eliminar reto"
+        ]
+    )
+
+    # ==========================
+    # ELIMINAR
+    # ==========================
+
+    if accion == "🗑️ Eliminar reto":
+
+        opciones = {
+            f"{row['id']} - {row['creador']}":
+            row["id"]
+            for _, row in df.iterrows()
+        }
+
+        seleccion = st.selectbox(
+            "Seleccione el reto a eliminar",
+            list(opciones.keys())
         )
 
-        st.subheader("Base de Datos")
+        id_reto = opciones[seleccion]
 
-        st.dataframe(df)
+        if st.button("Eliminar registro"):
+
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "DELETE FROM retos WHERE id = ?",
+                (id_reto,)
+            )
+
+            conn.commit()
+
+            st.success(
+                "✅ Registro eliminado correctamente"
+            )
+
+            st.rerun()
+
+    # ==========================
+    # EDITAR
+    # ==========================
+
+    if accion == "✏️ Editar reto":
+
+        opciones = {
+            f"{row['id']} - {row['creador']}":
+            row["id"]
+            for _, row in df.iterrows()
+        }
+
+        seleccion = st.selectbox(
+            "Seleccione el reto a editar",
+            list(opciones.keys()),
+            key="editar"
+        )
+
+        id_reto = opciones[seleccion]
+
+        fila = df[
+            df["id"] == id_reto
+        ].iloc[0]
+
+        creador = st.text_input(
+            "Nombre",
+            value=fila["creador"]
+        )
+
+        p1 = st.text_input(
+            preguntas[0],
+            value=fila["p1"]
+        )
+
+        p2 = st.text_input(
+            preguntas[1],
+            value=fila["p2"]
+        )
+
+        p3 = st.text_input(
+            preguntas[2],
+            value=fila["p3"]
+        )
+
+        p4 = st.text_input(
+            preguntas[3],
+            value=fila["p4"]
+        )
+
+        p5 = st.text_input(
+            preguntas[4],
+            value=fila["p5"]
+        )
+
+        p6 = st.text_input(
+            preguntas[5],
+            value=fila["p6"]
+        )
+
+        p7 = st.text_input(
+            preguntas[6],
+            value=fila["p7"]
+        )
+
+        p8 = st.text_input(
+            preguntas[7],
+            value=fila["p8"]
+        )
+
+        p9 = st.text_input(
+            preguntas[8],
+            value=fila["p9"]
+        )
+
+        p10 = st.text_input(
+            preguntas[9],
+            value=fila["p10"]
+        )
+
+        if st.button("Guardar cambios"):
+
+            cursor = conn.cursor()
+
+            cursor.execute("""
+            UPDATE retos
+            SET
+                creador=?,
+                p1=?,
+                p2=?,
+                p3=?,
+                p4=?,
+                p5=?,
+                p6=?,
+                p7=?,
+                p8=?,
+                p9=?,
+                p10=?
+            WHERE id=?
+            """,
+            (
+                creador,
+                p1,
+                p2,
+                p3,
+                p4,
+                p5,
+                p6,
+                p7,
+                p8,
+                p9,
+                p10,
+                id_reto
+            ))
+
+            conn.commit()
+
+            st.success(
+                "✅ Registro actualizado correctamente"
+            )
+
+            st.rerun()
 
         conn.close()
-
+   
     elif password:
 
         st.error("❌ Contraseña incorrecta")
