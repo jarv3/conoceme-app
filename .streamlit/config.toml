@@ -1,0 +1,16 @@
+[theme]
+
+# Color principal para botones y elementos activos
+primaryColor="#FF4B8B"
+
+# Fondo principal
+backgroundColor="#FFF8FA"
+
+# Fondo de paneles laterales
+secondaryBackgroundColor="#FFE4EC"
+
+# Color del texto
+textColor="#2D3748"
+
+# Fuente
+font="sans serif"

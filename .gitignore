@@ -1,0 +1,16 @@
+# Entorno virtual
+venv/
+
+# Archivos temporales Python
+__pycache__/
+*.pyc
+
+# Base de datos SQLite
+juego.db
+*.db
+
+# Configuración secreta Streamlit
+.streamlit/secrets.toml
+
+# Configuración VS Code
+.vscode/
