@@ -316,28 +316,47 @@ if menu == "🔒 Solo Personal Autorizado":
         type="password"
     )
 
-    if password == st.secrets["ADMIN_PASSWORD"]:
+    if password == "":
 
-            st.success("✅ Acceso autorizado")
+        st.info("Ingrese la contraseña para continuar")
+        st.stop()
 
-    conn = conectar_db()
+    elif password != st.secrets["ADMIN_PASSWORD"]:
 
-    df = pd.read_sql_query(
-        "SELECT * FROM retos",
-        conn
-    )
+        st.error("❌ Contraseña incorrecta")
+        st.stop()
 
-    st.subheader("📋 Registros almacenados")
+    else:
 
-    st.dataframe(df)
+        st.success("✅ Acceso autorizado")
 
-    accion = st.radio(
-        "Seleccione una acción",
-        [
-            "✏️ Editar reto",
-            "🗑️ Eliminar reto"
-        ]
-    )
+        conn = conectar_db()
+
+        df = pd.read_sql_query(
+            "SELECT * FROM retos",
+            conn
+        )
+
+        st.subheader("📋 Registros almacenados")
+
+        st.dataframe(df)
+
+        if df.empty:
+
+            st.info(
+                "ℹ️ No existen registros almacenados."
+            )
+
+            conn.close()
+            st.stop()
+
+        accion = st.radio(
+            "Seleccione una acción",
+            [
+                "✏️ Editar reto",
+                "🗑️ Eliminar reto"
+            ]
+        )
 
     # ==========================
     # ELIMINAR
@@ -499,6 +518,4 @@ if menu == "🔒 Solo Personal Autorizado":
 
         conn.close()
    
-    elif password:
-
-        st.error("❌ Contraseña incorrecta")
+    
